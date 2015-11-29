@@ -4,6 +4,7 @@
 #include <iostream>
 #include "Matrix.h"
 
+
 Matrix::Matrix()
 {
 	_M = 1;
@@ -18,6 +19,7 @@ Matrix::Matrix()
 
 }
 
+
 Matrix::Matrix(int sizeR, int sizeC, double* input_data)
 {
 	_M = sizeR;
@@ -30,6 +32,8 @@ Matrix::Matrix(int sizeR, int sizeC, double* input_data)
 		_data[x] = input_data[x];
 	}
 }
+
+
 //copy constructor
 Matrix::Matrix(const Matrix& m)
 {
@@ -46,6 +50,7 @@ Matrix::Matrix(const Matrix& m)
 		_data[i] = m._data[i];
 	}
 }
+
 
 //operator overloads
 Matrix Matrix::operator+(const Matrix& other)
@@ -67,12 +72,13 @@ Matrix Matrix::operator+(const Matrix& other)
 	return temp;
 }
 
+
 Matrix Matrix::operator=(const Matrix& other)
 {
 #ifdef DEBUG
 	std::cout << "Operator '=' overload" << std::endl;
 #endif
-	//delete existing _data information - as we are going to replace it with 'other._data'
+	//delete existing _data information
 	delete[] _data;
 	_M = other._M;
 	_N = other._N;
@@ -80,7 +86,6 @@ Matrix Matrix::operator=(const Matrix& other)
 	//reserve memory for new array
 	_data = new double[_M*_N];
 
-	//'this' pointer refers to the current object
 	for (int x = 0; x < (_M*_N); x++)
 	{
 		this->_data[x] = other._data[x];
@@ -96,16 +101,19 @@ int Matrix::getM()
 	return _M;
 }
 
+
 int Matrix::getN()
 {
 	return _N;
 }
+
 
 double Matrix::get(int i, int j)
 {
 	return _data[(i*_N) + j];
 
 }
+
 
 Matrix Matrix::getBlock(int start_row, int end_row, int start_column, int end_column)
 {
@@ -137,6 +145,7 @@ Matrix Matrix::getBlock(int start_row, int end_row, int start_column, int end_co
 	return temp;
 }
 
+
 Matrix Matrix::add(const Matrix& other)
 {
 	//create temporary array of row*colum size
@@ -150,16 +159,18 @@ Matrix Matrix::add(const Matrix& other)
 
 	//create a temporary Matrix object with the row/column/data info
 	Matrix temp(other._M, other._N, data);
-	//delete the data array (which we can do as the array is 'deep copied' when 'temp' is created
+	//delete the data array 
 	delete[] data;
 
 	return temp;
 }
 
+
 double* Matrix::getData()
 {
 	return _data;
 }
+
 
 Matrix::~Matrix()
 {
