@@ -1,5 +1,5 @@
 //definitions
-#define DEBUG
+//#define DEBUG
 
 #include <iostream>
 #include "Matrix.h"
@@ -22,6 +22,9 @@ Matrix::Matrix()
 
 Matrix::Matrix(int sizeR, int sizeC, double* input_data)
 {
+#ifdef DEBUG
+	std::cout << "Constructor invoked" << std::endl;
+#endif
 	_M = sizeR;
 	_N = sizeC;
 
@@ -31,6 +34,18 @@ Matrix::Matrix(int sizeR, int sizeC, double* input_data)
 	{
 		_data[x] = input_data[x];
 	}
+}
+
+
+Matrix::Matrix(int sizeR, int sizeC)
+{
+#ifdef DEBUG
+	std::cout << "Constructor invoked" << std::endl;
+#endif
+	_M = sizeR;
+	_N = sizeC;
+
+	_data = new double[_M*_N];
 }
 
 
@@ -111,7 +126,6 @@ int Matrix::getN()
 double Matrix::get(int i, int j)
 {
 	return _data[(i*_N) + j];
-
 }
 
 
@@ -143,6 +157,32 @@ Matrix Matrix::getBlock(int start_row, int end_row, int start_column, int end_co
 
 	//return the temporary matrix
 	return temp;
+}
+
+int Matrix::getTotal()
+{
+	int temp = 0;
+
+	for (int i = 0; i < _M * _N; i++)
+	{
+		temp += (int) _data[i];
+	}
+#ifdef DEBUG
+	std::cout << temp << std::endl;
+#endif
+	return temp;
+}
+
+int Matrix::setBlock(int start_row, int end_row, int start_column, int end_column, Matrix& block)
+{
+	for (int i = 0; i < start_row - end_row; i++)
+	{
+		for (int j = 0; j < start_column - end_column; j++)	
+		{
+			this->_data[(i + start_column) * _M + (j + start_row)] = block._data[i * block._M + j];
+		}
+	}
+	return 0;
 }
 
 

@@ -2,12 +2,11 @@
 class Matrix
 {
 public:
-	//constructor
+	//constructors
 	Matrix();
-	//constructor with arguments
 	Matrix(int sizeR, int sizeC, double* inputData);
-	//coppy constructor
-	Matrix::Matrix(const Matrix& m);
+	Matrix(const Matrix& m);
+	Matrix(int sizeR, int sizeC);
 
 	//destructor
 	~Matrix();
@@ -19,8 +18,10 @@ public:
 
 
 	Matrix Matrix::getBlock(int start_row, int end_row, int start_column, int end_column);
+	int Matrix::setBlock(int start_row, int end_row, int start_column, int end_column, Matrix& block);
 	int Matrix::getM();
 	int Matrix::getN();
+	int Matrix::getTotal();
 	double* Matrix::getData();
 	double get(int i, int j);
 
