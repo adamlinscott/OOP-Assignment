@@ -88,6 +88,26 @@ Matrix Matrix::operator+(const Matrix& other)
 }
 
 
+Matrix Matrix::operator-(const double mean)
+{
+#ifdef DEBUG
+	std::cout << "Operator '-' overload" << std::endl;
+#endif
+	Matrix temp;
+	temp._M = _M;
+	temp._N = _N;
+
+	temp._data = new double[temp._M*temp._N];
+
+	for (int x = 0; x < (temp._M*temp._N); x++)
+	{
+		temp._data[x] = this->_data[x] - mean;
+	}
+
+	return temp;
+}
+
+
 Matrix Matrix::operator=(const Matrix& other)
 {
 #ifdef DEBUG
@@ -173,18 +193,27 @@ int Matrix::getTotal()
 	return temp;
 }
 
+double Matrix::getMean() 
+{
+	return (getTotal() / (_M * _N));
+}
+
+double* Matrix::getData()
+{
+	return _data;
+}
+
 int Matrix::setBlock(int start_row, int end_row, int start_column, int end_column, Matrix& block)
 {
-	for (int i = 0; i < start_row - end_row; i++)
+	for (int i = 0; i < end_row - start_row + 1; i++)
 	{
-		for (int j = 0; j < start_column - end_column; j++)	
+		for (int j = 0; j < end_column - start_column + 1; j++)	
 		{
-			this->_data[(i + start_column) * _M + (j + start_row)] = block._data[i * block._M + j];
+			this->_data[(i + start_row) * _M + (j + start_column)] = block._data[i * block._M + j];
 		}
 	}
 	return 0;
 }
-
 
 Matrix Matrix::add(const Matrix& other)
 {
@@ -204,13 +233,6 @@ Matrix Matrix::add(const Matrix& other)
 
 	return temp;
 }
-
-
-double* Matrix::getData()
-{
-	return _data;
-}
-
 
 Matrix::~Matrix()
 {

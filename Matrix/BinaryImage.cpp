@@ -11,6 +11,8 @@ BinaryImage::BinaryImage(int M, int N, double* input_data, double threshold)
 	_M = M;
 	_N = N;
 
+	_data = new double[_M*_N];
+
 	for (int i = 0; i < M; i++)
 	{
 		for (int j = 0; j < N; j++)

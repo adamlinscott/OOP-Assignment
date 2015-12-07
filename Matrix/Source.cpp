@@ -3,6 +3,7 @@
 #include <fstream> // ifstream
 #include <istream>
 #include "Matrix.h"
+#include "BinaryImage.h"
 
 using namespace std;
 
@@ -14,6 +15,8 @@ using namespace std;
 // and converts it to a 1D array of doubles of size R*C
 // Memory allocation is performed inside readTXT
 double* readTXT(char *fileName, int sizeR, int sizeC);
+
+int square(int input);
 
 // Converts a 1D array of doubles of size R*C to .pgm image of R rows and C Columns 
 // and stores .pgm in filename
@@ -33,8 +36,8 @@ int main()
 	// once you're done with data DO NOT forget to delete the memory as in the end of this main() function
 	double* input_data = 0;
 
-	cout << endl;
-	cout << "Data from text file -------------------------------------------" << endl;
+	std::cout << endl;
+	std::cout << "Data from text file -------------------------------------------" << endl;
 
 	//Create shuffled image matrix object
 	char* inputFileName = "shuffled_logo.txt"; 
@@ -48,59 +51,54 @@ int main()
 
 	Matrix outputLogo(M, N);
 
-	for (int i = 0; i < 16 * 16; i++) //For each 32 x 32 pixel block
+	for (int i = 0; i < 16 * 16; i++) //For each 32 x 32 pixel block in shuffled
 	{
 		Matrix referanceBlock = noisyLogo.getBlock((i - (i % 16)) * 2, (i - (i % 16)) * 2 + 31, (i * 32) % M, (i * 32) % M + 31);
+		Matrix tempBlock = shuffledLogo.getBlock((i - (i % 16)) * 2, (i - (i % 16)) * 2 + 31, (i * 32) % M, (i * 32) % M + 31);
 
-		Matrix tempBlock;
+		BinaryImage binaryReferanceBlock(referanceBlock.getM(), referanceBlock.getN(), referanceBlock.getData(), 110);
+		BinaryImage binaryTempBlock(tempBlock.getM(), tempBlock.getN(), tempBlock.getData(), 110);
 
-		//for (int j = i; j < 16 * 16; j++) //For each 32 x 32 pixel block that has not been sorted
-		//{
-		//	Matrix testBlock = shuffledLogo.getBlock((j - (j % 16)) * 2, (j - (j % 16)) * 2 + 31, (j * 32) % M, (j * 32) % M + 31);
-		//	
-		//	int testSqrDiff = abs((referanceBlock.getTotal() - testBlock.getTotal()) * (referanceBlock.getTotal() - testBlock.getTotal()));
-		//	int tempSqrDiff = abs((referanceBlock.getTotal() - tempBlock.getTotal()) * (referanceBlock.getTotal() - tempBlock.getTotal()));
-
-		//	if ( testSqrDiff < tempSqrDiff || tempBlock.getM() == 1)
-		//	{
-		//		tempBlock = testBlock;
-		//		shuffledLogo.setBlock((j - (j % 16)) * 2, (j - (j % 16)) * 2 + 31, (j * 32) % M, (j * 32) % M + 31, shuffledLogo.getBlock((i - (i % 16)) * 2, (i - (i % 16)) * 2 + 31, (i * 32) % M, (i * 32) % M + 31));
-		//		shuffledLogo.setBlock((i - (i % 16)) * 2, (i - (i % 16)) * 2 + 31, (i * 32) % M, (i * 32) % M + 31, tempBlock);
-		//	}
-		//}
-
-
-		for (int j = 0; j < 16 * 16; j++) //For each 32 x 32 pixel block that has not been sorted
+		for (int j = i + 1; j < 16 * 16; j++) //For each 32 x 32 pixel block that has not been sorted
 		{
 			Matrix testBlock = shuffledLogo.getBlock((j - (j % 16)) * 2, (j - (j % 16)) * 2 + 31, (j * 32) % M, (j * 32) % M + 31);
 
-			int testSqrDiff = abs((referanceBlock.getTotal() - testBlock.getTotal()) * (referanceBlock.getTotal() - testBlock.getTotal()));
-			int tempSqrDiff = abs((referanceBlock.getTotal() - tempBlock.getTotal()) * (referanceBlock.getTotal() - tempBlock.getTotal()));
 
-			if (testSqrDiff < tempSqrDiff || tempBlock.getM() == 1)
+			BinaryImage binaryTestBlock(testBlock.getM(), testBlock.getN(), testBlock.getData(), 110);
+
+			int testSqrDiff = square(binaryReferanceBlock.getTotal() - binaryTestBlock.getTotal());
+			int tempSqrDiff = square(binaryReferanceBlock.getTotal() - binaryTempBlock.getTotal());
+
+			if (testSqrDiff <= tempSqrDiff)
 			{
+				shuffledLogo.setBlock((j - (j % 16)) * 2, (j - (j % 16)) * 2 + 31, (j * 32) % M, (j * 32) % M + 31,tempBlock);
 				tempBlock = testBlock;
+				binaryTempBlock = binaryTestBlock;
+				shuffledLogo.setBlock((i - (i % 16)) * 2, (i - (i % 16)) * 2 + 31, (i * 32) % M, (i * 32) % M + 31, tempBlock);
 			}
 		}
-		outputLogo.setBlock((i - (i % 16)) * 2, (i - (i % 16)) * 2 + 31, (i * 32) % M, (i * 32) % M + 31, tempBlock);
 	}
 
-	/*
-		CODE TO PROCESS input_data SHOULD BE WRITTEN HERE!! (after removing the comments:)
-	*/
+	
 
 	// writes data back to .pgm file stored in outputFileName
 	char* outputFileName = "logo_restored.pgm";//logo_restored
 	// Use Q = 255 for greyscale images and 1 for binary images.
 	int Q = 255;
-	WritePGM(outputFileName, outputLogo.getData(), M, N, Q);
+	WritePGM(outputFileName, shuffledLogo.getData(), M, N, Q);
 
 	delete[] input_data;
 
-	cout << "fin" << endl;
+	std::cout << "fin" << endl;
 	getchar();
 
 	return 0;
+}
+
+
+int square(int input)
+{
+	return abs(input * input);
 }
 
 
@@ -122,7 +120,7 @@ double* readTXT(char *fileName, int sizeR, int sizeC)
 		}
 		myfile.close();
 	}
-	else cout << "Unable to open file";
+	else std::cout << "Unable to open file";
 	//cout << i;
 
 	return data;
@@ -146,7 +144,7 @@ void WritePGM(char *filename, double *data, int sizeR, int sizeC, int Q)
 	myfile.open(filename, ios::out | ios::binary | ios::trunc);
 
 	if (!myfile) {
-		cout << "Can't open file: " << filename << endl;
+		std::cout << "Can't open file: " << filename << endl;
 		exit(1);
 	}
 
@@ -157,7 +155,7 @@ void WritePGM(char *filename, double *data, int sizeR, int sizeC, int Q)
 	myfile.write(reinterpret_cast<char *>(image), (sizeR*sizeC)*sizeof(unsigned char));
 
 	if (myfile.fail()) {
-		cout << "Can't write image " << filename << endl;
+		std::cout << "Can't write image " << filename << endl;
 		exit(0);
 	}
 
