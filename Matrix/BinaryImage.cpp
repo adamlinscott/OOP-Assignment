@@ -11,7 +11,7 @@ BinaryImage::BinaryImage(int M, int N, double* input_data, double threshold)
 	_M = M;
 	_N = N;
 
-	_data = new double[_M*_N];
+	_bData = new double[_M*_N];
 
 	for (int i = 0; i < M; i++)
 	{
@@ -19,11 +19,11 @@ BinaryImage::BinaryImage(int M, int N, double* input_data, double threshold)
 		{
 			if (input_data[i * N + j] > threshold)
 			{
-				_data[i * N + j] = 1;
+				this->_bData[i * N + j] = 1;
 			}
 			else
 			{
-				_data[i * N + j] = 0;
+				this->_bData[i * N + j] = 0;
 			}
 		}
 	}
@@ -37,5 +37,5 @@ BinaryImage::~BinaryImage()
 #ifdef DEBUG
 	std::cout << "BinaryImage::~BinaryImage() is invoked" << std::endl;
 #endif
-	delete[] _data;
+	delete[] _bData;
 }

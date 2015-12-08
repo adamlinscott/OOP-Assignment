@@ -5,6 +5,7 @@ public:
 	//constructors
 	Matrix();
 	Matrix(int sizeR, int sizeC, double* inputData);
+	Matrix::Matrix(int M, int N, double* input_data, double threshold);
 	Matrix(const Matrix& m);
 	Matrix(int sizeR, int sizeC);
 
@@ -22,7 +23,8 @@ public:
 	int Matrix::setBlock(int start_row, int end_row, int start_column, int end_column, Matrix& block);
 	int Matrix::getM();
 	int Matrix::getN();
-	int Matrix::getTotal();
+	//int Matrix::getTotal();
+	virtual int Matrix::getTotal();
 	double* Matrix::getData();
 	double get(int i, int j);
 	double Matrix::getMean();

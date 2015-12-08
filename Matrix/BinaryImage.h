@@ -13,6 +13,6 @@ public:
 
 private:
 	int _M, _N;
-	double* _data;
+	double* _bData;
 };
 

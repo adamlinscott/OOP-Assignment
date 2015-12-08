@@ -36,6 +36,49 @@ Matrix::Matrix(int sizeR, int sizeC, double* input_data)
 	}
 }
 
+Matrix::Matrix(int M, int N, double* input_data, double threshold)
+{
+	_M = M;
+	_N = N;
+
+	_data = new double[_M*_N];
+
+	for (int i = 0; i < M; i++)
+	{
+		for (int j = 0; j < N; j++)
+		{
+			if (input_data[i * N + j + 1] < threshold && input_data[i * N + j - 1] < threshold)
+			{
+				this->_data[i * N + j] = 0;
+			}
+			else if (input_data[i * N + j + 1] > threshold && input_data[i * N + j - 1] > threshold)
+			{
+				this->_data[i * N + j] = 255;
+			} 
+			else if (input_data[(i + 1) * N + j] < threshold && input_data[abs((i - 1) * N + j)] < threshold)
+			{
+				this->_data[i * N + j] = 0;
+			}
+			else if (input_data[(i + 1) * N + j] > threshold && input_data[(i - 1) * N + j] > threshold)
+			{
+				this->_data[i * N + j] = 255;
+			}
+			else if (input_data[i * N + j] > threshold)
+			{
+				this->_data[i * N + j] = 255;
+			}
+			else
+			{
+				this->_data[i * N + j] = 0;
+			}
+
+		}
+	}
+#ifdef DEBUG
+	std::cout << "Matrix::Matrix(int M, int N, double* input_data, double threshold) is invoked" << std::endl;
+#endif
+}
+
 
 Matrix::Matrix(int sizeR, int sizeC)
 {
@@ -179,6 +222,7 @@ Matrix Matrix::getBlock(int start_row, int end_row, int start_column, int end_co
 	return temp;
 }
 
+
 int Matrix::getTotal()
 {
 	int temp = 0;
@@ -193,15 +237,18 @@ int Matrix::getTotal()
 	return temp;
 }
 
+
 double Matrix::getMean() 
 {
 	return (getTotal() / (_M * _N));
 }
 
+
 double* Matrix::getData()
 {
 	return _data;
 }
+
 
 int Matrix::setBlock(int start_row, int end_row, int start_column, int end_column, Matrix& block)
 {
@@ -214,6 +261,7 @@ int Matrix::setBlock(int start_row, int end_row, int start_column, int end_colum
 	}
 	return 0;
 }
+
 
 Matrix Matrix::add(const Matrix& other)
 {
@@ -233,6 +281,7 @@ Matrix Matrix::add(const Matrix& other)
 
 	return temp;
 }
+
 
 Matrix::~Matrix()
 {
