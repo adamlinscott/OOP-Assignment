@@ -23,7 +23,7 @@ int square(int input);
 // Use Q = 255 for greyscale images and Q=1 for binary images.
 void WritePGM(char *filename, double *data, int sizeR, int sizeC, int Q);
 
-const int threshhold = 80;
+const int threshhold = 110;
 
 
 int main()
@@ -68,8 +68,8 @@ int main()
 
 			Matrix binaryTestBlock(testBlock.getM(), testBlock.getN(), testBlock.getData(), threshhold);
 
-			int testSqrDiff = abs(binaryReferanceBlock.getTotal() - binaryTestBlock.getTotal());
-			int tempSqrDiff = abs(binaryReferanceBlock.getTotal() - binaryTempBlock.getTotal());
+			int testSqrDiff = (binaryReferanceBlock - binaryTestBlock).getSS(); /*abs(referanceBlock.getTotal() - testBlock.getTotal())*/
+			int tempSqrDiff = (binaryReferanceBlock - binaryTempBlock).getSS(); /*abs(referanceBlock.getTotal() - tempBlock.getTotal())*/
 
 			if (testSqrDiff <= tempSqrDiff)
 			{

@@ -15,6 +15,7 @@ public:
 	//operator overloads
 	Matrix Matrix::operator+(const Matrix& other);
 	Matrix Matrix::operator=(const Matrix& other);
+	Matrix Matrix::operator-(const Matrix& other);
 	Matrix Matrix::operator-(const double mean);
 
 
@@ -28,6 +29,7 @@ public:
 	double* Matrix::getData();
 	double get(int i, int j);
 	double Matrix::getMean();
+	int getSS();
 
 
 	Matrix Matrix::add(const Matrix& other);
