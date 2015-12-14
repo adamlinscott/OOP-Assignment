@@ -1,8 +1,9 @@
 //definitions
-#define DEBUG
+//#define DEBUG
 
 #include <iostream>
 #include "Matrix.h"
+
 
 Matrix::Matrix()
 {
@@ -18,8 +19,12 @@ Matrix::Matrix()
 
 }
 
+
 Matrix::Matrix(int sizeR, int sizeC, double* input_data)
 {
+#ifdef DEBUG
+	std::cout << "Constructor invoked" << std::endl;
+#endif
 	_M = sizeR;
 	_N = sizeC;
 
@@ -30,6 +35,63 @@ Matrix::Matrix(int sizeR, int sizeC, double* input_data)
 		_data[x] = input_data[x];
 	}
 }
+
+Matrix::Matrix(int M, int N, double* input_data, double threshold)
+{
+	_M = M;
+	_N = N;
+
+	_data = new double[_M*_N];
+
+	for (int i = 0; i < M; i++)
+	{
+		for (int j = 0; j < N; j++)
+		{
+			if (input_data[i * N + j + 1] < threshold && input_data[i * N + j - 1] < threshold)
+			{
+				this->_data[i * N + j] = 0;
+			}
+			else if (input_data[i * N + j + 1] > threshold && input_data[i * N + j - 1] > threshold)
+			{
+				this->_data[i * N + j] = 255;
+			} 
+			else if (input_data[(i + 1) * N + j] < threshold && input_data[abs((i - 1) * N + j)] < threshold)
+			{
+				this->_data[i * N + j] = 0;
+			}
+			else if (input_data[(i + 1) * N + j] > threshold && input_data[(i - 1) * N + j] > threshold)
+			{
+				this->_data[i * N + j] = 255;
+			}
+			else if (input_data[i * N + j] > threshold)
+			{
+				this->_data[i * N + j] = 255;
+			}
+			else
+			{
+				this->_data[i * N + j] = 0;
+			}
+
+		}
+	}
+#ifdef DEBUG
+	std::cout << "Matrix::Matrix(int M, int N, double* input_data, double threshold) is invoked" << std::endl;
+#endif
+}
+
+
+Matrix::Matrix(int sizeR, int sizeC)
+{
+#ifdef DEBUG
+	std::cout << "Constructor invoked" << std::endl;
+#endif
+	_M = sizeR;
+	_N = sizeC;
+
+	_data = new double[_M*_N];
+}
+
+
 //copy constructor
 Matrix::Matrix(const Matrix& m)
 {
@@ -46,6 +108,7 @@ Matrix::Matrix(const Matrix& m)
 		_data[i] = m._data[i];
 	}
 }
+
 
 //operator overloads
 Matrix Matrix::operator+(const Matrix& other)
@@ -67,12 +130,53 @@ Matrix Matrix::operator+(const Matrix& other)
 	return temp;
 }
 
+
+Matrix Matrix::operator-(const Matrix& other)
+{
+#ifdef DEBUG
+	std::cout << "Operator '-' overload" << std::endl;
+#endif
+	Matrix temp;
+	temp._M = other._M;
+	temp._N = other._N;
+
+	temp._data = new double[temp._M*temp._N];
+
+	for (int x = 0; x < (temp._M*temp._N); x++)
+	{
+		temp._data[x] = this->_data[x] - other._data[x];
+	}
+
+	return temp;
+}
+
+
+Matrix Matrix::operator-(const double mean)
+{
+#ifdef DEBUG
+	std::cout << "Operator '-' overload" << std::endl;
+#endif
+	Matrix temp;
+	temp._M = _M;
+	temp._N = _N;
+
+	temp._data = new double[temp._M*temp._N];
+
+	for (int x = 0; x < (temp._M*temp._N); x++)
+	{
+		temp._data[x] = this->_data[x] - mean;
+	}
+
+	return temp;
+}
+
+
 Matrix Matrix::operator=(const Matrix& other)
 {
 #ifdef DEBUG
 	std::cout << "Operator '=' overload" << std::endl;
 #endif
-	//delete existing _data information - as we are going to replace it with 'other._data'
+	//delete existing _data information
 	delete[] _data;
 	_M = other._M;
 	_N = other._N;
@@ -80,7 +184,6 @@ Matrix Matrix::operator=(const Matrix& other)
 	//reserve memory for new array
 	_data = new double[_M*_N];
 
-	//'this' pointer refers to the current object
 	for (int x = 0; x < (_M*_N); x++)
 	{
 		this->_data[x] = other._data[x];
@@ -96,16 +199,18 @@ int Matrix::getM()
 	return _M;
 }
 
+
 int Matrix::getN()
 {
 	return _N;
 }
 
+
 double Matrix::get(int i, int j)
 {
 	return _data[(i*_N) + j];
-
 }
+
 
 Matrix Matrix::getBlock(int start_row, int end_row, int start_column, int end_column)
 {
@@ -137,6 +242,60 @@ Matrix Matrix::getBlock(int start_row, int end_row, int start_column, int end_co
 	return temp;
 }
 
+
+int Matrix::getTotal()
+{
+	int temp = 0;
+
+	for (int i = 0; i < _M * _N; i++)
+	{
+		temp += (int) _data[i];
+	}
+#ifdef DEBUG
+	std::cout << temp << std::endl;
+#endif
+	return temp;
+}
+
+
+int Matrix::getSS() 
+{
+	int total = 0;
+
+	for (int x = 0; x < _M * _N; x++)
+	{
+		total += (this->_data[x] * this->_data[x]);
+	}
+
+	return total;
+}
+
+
+double Matrix::getMean() 
+{
+	return (getTotal() / (_M * _N));
+}
+
+
+double* Matrix::getData()
+{
+	return _data;
+}
+
+
+int Matrix::setBlock(int start_row, int end_row, int start_column, int end_column, Matrix& block)
+{
+	for (int i = 0; i < end_row - start_row + 1; i++)
+	{
+		for (int j = 0; j < end_column - start_column + 1; j++)	
+		{
+			this->_data[(i + start_row) * _M + (j + start_column)] = block._data[i * block._M + j];
+		}
+	}
+	return 0;
+}
+
+
 Matrix Matrix::add(const Matrix& other)
 {
 	//create temporary array of row*colum size
@@ -150,16 +309,12 @@ Matrix Matrix::add(const Matrix& other)
 
 	//create a temporary Matrix object with the row/column/data info
 	Matrix temp(other._M, other._N, data);
-	//delete the data array (which we can do as the array is 'deep copied' when 'temp' is created
+	//delete the data array 
 	delete[] data;
 
 	return temp;
 }
 
-double* Matrix::getData()
-{
-	return _data;
-}
 
 Matrix::~Matrix()
 {

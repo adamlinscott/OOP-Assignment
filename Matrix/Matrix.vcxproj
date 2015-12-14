@@ -118,9 +118,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BinaryImage.h" />
     <ClInclude Include="Matrix.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BinaryImage.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
