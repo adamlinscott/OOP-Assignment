@@ -242,6 +242,23 @@ Matrix Matrix::getBlock(int start_row, int end_row, int start_column, int end_co
 	return temp;
 }
 
+void Matrix::denoise(int threshold)
+{
+	for (int i = 0; i < _M; i++)
+	{
+		for (int j = 0; j < _N; j++)
+		{
+			if (_data[i * _N + j + 1] == 0 && _data[i * _N + j - 1] == 0)
+			{
+				this->_data[i * _N + j] = 0;
+			}
+			else if (_data[i * _N + j + 1] > threshold && _data[i * _N + j - 1] > threshold)
+			{
+				this->_data[i * _N + j] = 255;
+			}
+		}
+	}
+}
 
 int Matrix::getTotal()
 {

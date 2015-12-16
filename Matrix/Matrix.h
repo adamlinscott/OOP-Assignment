@@ -31,6 +31,8 @@ public:
 	double Matrix::getMean();
 	int getSS();
 
+	void denoise(int threshold);
+
 
 	Matrix Matrix::add(const Matrix& other);
 

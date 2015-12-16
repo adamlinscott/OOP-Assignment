@@ -49,7 +49,9 @@ int main()
 	//Create noisy image matrix object
 	inputFileName = "unshuffled_logo_noisy.txt"; 
 	input_data = readTXT(inputFileName, M, N);
-	Matrix noisyLogo(M, N, input_data, threshhold); 
+	Matrix noisyLogo(M, N, input_data/*, threshhold*/); 
+
+	noisyLogo.denoise(threshhold);
 
 	Matrix outputLogo(M, N);
 
@@ -58,24 +60,24 @@ int main()
 		Matrix referanceBlock = noisyLogo.getBlock((i - (i % 16)) * 2, (i - (i % 16)) * 2 + 31, (i * 32) % M, (i * 32) % M + 31);
 		Matrix tempBlock = shuffledLogo.getBlock((i - (i % 16)) * 2, (i - (i % 16)) * 2 + 31, (i * 32) % M, (i * 32) % M + 31);
 
-		Matrix binaryReferanceBlock(referanceBlock.getM(), referanceBlock.getN(), referanceBlock.getData(), threshhold);
-		Matrix binaryTempBlock(tempBlock.getM(), tempBlock.getN(), tempBlock.getData(), threshhold);
+	//	Matrix binaryReferanceBlock(referanceBlock.getM(), referanceBlock.getN(), referanceBlock.getData(), threshhold);
+	//	Matrix binaryTempBlock(tempBlock.getM(), tempBlock.getN(), tempBlock.getData(), threshhold);
 
 		for (int j = i + 1; j < 16 * 16; j++) //For each 32 x 32 pixel block that has not been sorted
 		{
 			Matrix testBlock = shuffledLogo.getBlock((j - (j % 16)) * 2, (j - (j % 16)) * 2 + 31, (j * 32) % M, (j * 32) % M + 31);
 
 
-			Matrix binaryTestBlock(testBlock.getM(), testBlock.getN(), testBlock.getData(), threshhold);
+		//	Matrix binaryTestBlock(testBlock.getM(), testBlock.getN(), testBlock.getData(), threshhold);
 
-			int testSqrDiff = (binaryReferanceBlock - binaryTestBlock).getSS(); /*abs(referanceBlock.getTotal() - testBlock.getTotal())*/
-			int tempSqrDiff = (binaryReferanceBlock - binaryTempBlock).getSS(); /*abs(referanceBlock.getTotal() - tempBlock.getTotal())*/
+			int testSqrDiff = (referanceBlock - testBlock).getSS(); /*abs(referanceBlock.getTotal() - testBlock.getTotal())*/
+			int tempSqrDiff = (referanceBlock - tempBlock).getSS(); /*abs(referanceBlock.getTotal() - tempBlock.getTotal())*/
 
 			if (testSqrDiff <= tempSqrDiff)
 			{
 				shuffledLogo.setBlock((j - (j % 16)) * 2, (j - (j % 16)) * 2 + 31, (j * 32) % M, (j * 32) % M + 31,tempBlock);
 				tempBlock = testBlock;
-				binaryTempBlock = binaryTestBlock;
+				//binaryTempBlock = binaryTestBlock;
 				shuffledLogo.setBlock((i - (i % 16)) * 2, (i - (i % 16)) * 2 + 31, (i * 32) % M, (i * 32) % M + 31, tempBlock);
 			}
 		}
